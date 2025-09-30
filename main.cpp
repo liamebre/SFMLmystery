@@ -19,7 +19,6 @@ int main()
 	Text& text = *(new Text(font," ",30));
 	textBox tb(screenSize,text);
 
-	player p1({ width / 2,height / 2 }, { 30,30 }, 300);
 
 	Clock clock;
 	Clock gameClock;
@@ -38,26 +37,13 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Key::Enter)) {
 			tb.nextline(gc);
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Key::W)) {
-			p1.moveup();
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Key::S)) {
-			p1.movedown();
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Key::A)) {
-			p1.moveleft();
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Key::D)) {
-			p1.moveright();
-		}
 
 		tb.update(text,sayings,currSay);
-		p1.update(dt);
+
 
 		// Update the game state
 		window.clear();
 		tb.getTextBox(window,text);
-		window.draw(p1.body);
 		window.display();
 
 	}//end of open window
