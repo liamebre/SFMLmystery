@@ -14,10 +14,11 @@ textBox::~textBox()
 	textArea.setPosition(position);
 }
 
-textBox::textBox( Vector2f _size,Text& _text)
+textBox::textBox( Vector2f _size,Text& _text,Font _font)
 {
 	size = { _size.x - 100, _size.y / 4};
 	position = { 50, size.y * 3 - 30};
+	font = _font;
 
 	baseBox.setSize({ size.x, size.y});
 	baseBox.setPosition({ position.x, position.y });
@@ -29,10 +30,11 @@ textBox::textBox( Vector2f _size,Text& _text)
 	textArea.setPosition(Vector2f(position.x + 10.f, position.y + 10.f));
 	textArea.setFillColor(Color::White);
 
-	_text.setCharacterSize(50);
+	_text.setCharacterSize(75);
 	_text.setPosition(Vector2f(position.x + 20.f, position.y + 20.f));
 	_text.setFillColor(Color::Black);
-	_text.setString("hello");
+	_text.setString("                                 hello world");
+
 }
 
 void textBox::nextline(Time gt)
@@ -46,27 +48,36 @@ void textBox::nextline(Time gt)
 	}
 }
 
-void textBox::update(Text& _text,vector<String> texts, int& line)
+void textBox::update(Text& _text,player& p)
 {
-	if (nextLine) {
-		_text.setString(changeText(texts,line));
+	if (isActive && nextLine) {
+		_text.setString(changeText(p.sayings,p.currSay));
+		p.currSay++;
 		nextLine = false;
 	}
 }
 
-String textBox::changeText(vector<String> texts, int& line)
+String textBox::changeText(vector<String> texts, int line)
 {
-	line++;
-	if (line >= static_cast<int>(texts.size()) ) {
-		line = 0;
+	if (line >= texts.size()) {
+		// Hide the textbox when we've reached the end
+		isActive = false;
+		line = static_cast<int>(texts.size()) - 1; // Stay on last message
+		return texts[line];
 	}
 	return texts[line];
 }
 
 void textBox::getTextBox(RenderWindow& _window, Text& _text)
 {
-	_window.draw(baseBox);
-	_window.draw(textArea);
-	_window.draw(_text);
+	if (isActive) {
+		_window.draw(baseBox);
+		_window.draw(textArea);
+		_window.draw(_text);
+		Text temp(font, "(Press enter to continue)",25U );
+		temp.setFillColor({ 128, 128, 128, 175 });
+		temp.setPosition(Vector2f(position.x + size.x - 275.f, position.y + size.y - 45.f));
+		_window.draw(temp);
+	}
 }
 
