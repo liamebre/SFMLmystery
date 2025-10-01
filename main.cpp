@@ -1,5 +1,6 @@
 #include "textBox.h"
 #include "player.h"
+#include "NPC.h"
 
 int main()
 {
@@ -10,15 +11,14 @@ int main()
 	VideoMode vm(resolution);
 	RenderWindow window(vm, "murderMystery",State::Fullscreen);	
 
-	vector<String> sayings = { "hello","hi","how are you?","goodbye","see you later","bye" };
-	int currSay = 0; // keeps track of the current saying to display 
-
 	Font font;
-	if (!font.openFromFile("fonts/tuffy.ttf")) {cerr << "Error: Could not load font!" << endl;}
+	if (!font.openFromFile("fonts/tuffy.ttf")) { cerr << "Error: Could not load font!" << endl; }
 
-	Text& text = *(new Text(font," ",30));
-	textBox tb(screenSize,text);
+	Text text(font," ",30);
+	textBox tb(screenSize,text,font);
 
+	player p1({ width / 2,height / 2 }, { 30,60 });
+	NPC npc1({ width / 4, height / 4 }, {30,60});
 
 	Clock clock;
 	Clock gameClock;
@@ -34,16 +34,30 @@ int main()
 				window.close();
 		}
 
-		if (Keyboard::isKeyPressed(Keyboard::Key::Enter)) {
+		if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && tb.isActive) {
 			tb.nextline(gc);
 		}
+		if (Keyboard::isKeyPressed(Keyboard::Key::W)) {
+			p1.moveup();
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Key::S)) {
+			p1.movedown();
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Key::A)) {
+			p1.moveleft();
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Key::D)) {
+			p1.moveright();
+		}
 
-		tb.update(text,sayings,currSay);
-
+		tb.update(text,p1);
+		p1.update(dt);
 
 		// Update the game state
 		window.clear();
 		tb.getTextBox(window,text);
+		window.draw(p1.body);
+		window.draw(npc1.body);
 		window.display();
 
 	}//end of open window
